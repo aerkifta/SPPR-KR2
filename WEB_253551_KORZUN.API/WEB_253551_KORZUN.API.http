@@ -1,0 +1,6 @@
+@WEB_253551_KORZUN.API_HostAddress = http://localhost:5192
+
+GET {{WEB_253551_KORZUN.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

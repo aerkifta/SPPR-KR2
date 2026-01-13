@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WEB_253551_KORZUN.API.Services;
 using WEB_253551_KORZUN.Domain.Entities;
 using WEB_253551_KORZUN.Domain.Models;
@@ -19,6 +20,7 @@ namespace WEB_253551_KORZUN.API.Controllers
         // GET: api/carparts
         // GET: api/carparts?pageNo=2
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<ResponseData<ListModel<CarPart>>>> GetAllCarParts(
             [FromQuery] int pageNo = 1,
             [FromQuery] int pageSize = 3)
@@ -37,6 +39,7 @@ namespace WEB_253551_KORZUN.API.Controllers
         // GET: api/carparts/category/brakes
         // GET: api/carparts/category/brakes?pageNo=2
         [HttpGet("category/{category}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ResponseData<ListModel<CarPart>>>> GetCarPartsByCategory(
             string category,
             [FromQuery] int pageNo = 1,
@@ -55,6 +58,7 @@ namespace WEB_253551_KORZUN.API.Controllers
 
         // GET: api/carparts/5
         [HttpGet("{id:int}")]
+        [Authorize(Policy = "admin")]
         public async Task<ActionResult<ResponseData<CarPart>>> GetCarPart(int id)
         {
             var response = await _productService.GetProductByIdAsync(id);
@@ -67,6 +71,7 @@ namespace WEB_253551_KORZUN.API.Controllers
 
         // PUT: api/carparts/5
         [HttpPut("{id}")]
+        [Authorize(Policy = "admin")]
         public async Task<IActionResult> PutCarPart(int id, CarPart carPart)
         {
             if (id != carPart.Id)
@@ -86,6 +91,7 @@ namespace WEB_253551_KORZUN.API.Controllers
 
         // POST: api/carparts
         [HttpPost]
+        [Authorize(Policy = "admin")]
         public async Task<ActionResult<ResponseData<CarPart>>> PostCarPart(CarPart carPart)
         {
             var response = await _productService.CreateProductAsync(carPart);
@@ -98,6 +104,7 @@ namespace WEB_253551_KORZUN.API.Controllers
 
         // DELETE: api/carparts/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = "admin")]
         public async Task<IActionResult> DeleteCarPart(int id)
         {
             try

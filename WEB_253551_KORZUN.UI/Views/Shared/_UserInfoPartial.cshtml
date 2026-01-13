@@ -1,4 +1,62 @@
-﻿@await Component.InvokeAsync("Cart")
+﻿@using Microsoft.AspNetCore.Authentication
+
+@if (User.Identity.IsAuthenticated)
+{
+    @await Component.InvokeAsync("Cart")
+    
+    <div class="dropdown ms-4 nav-color">
+        @{
+            var name = User.Claims
+                .FirstOrDefault(c => c.Type.Equals("preferred_username", 
+                    StringComparison.OrdinalIgnoreCase))?
+                .Value ?? User.Identity.Name;
+            
+            var avatar = User.Claims
+                .FirstOrDefault(c => c.Type.Equals("avatar", 
+                    StringComparison.OrdinalIgnoreCase))?
+                .Value ?? "/images/profile-default.png";
+        }
+        
+        <button class="btn btn-secondary dropdown-toggle"
+                type="button" id="dropdownMenuButton"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+            @name
+            <img src="@avatar" width="30"
+                 alt="User" class="rounded nav-color" />
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li>
+                <span class="dropdown-item-text">
+                    <img src="@avatar"
+                         width="50" alt="User" class="rounded" />
+                    @name
+                </span>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <form id="logoutForm" asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                    <button id="logout" type="submit" class="nav-link btn btn-link text-dark">
+                        Logout
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div class="navbar-nav ms-auto">
+        <a class="nav-link" asp-controller="Account" asp-action="Login">
+            Login
+        </a>
+        <a class="nav-link" asp-controller="Account" asp-action="Register">
+            Register
+        </a>
+    </div>
+}
+
+@* @await Component.InvokeAsync("Cart")
 <div class="dropdown ms-4 nav-color">
     <button class="btn btn-secondary dropdown-toggle"
             type="button" id="dropdownMenuButton"
@@ -25,4 +83,4 @@
             </form>
         </li>
     </ul>
-</div>
+</div> *@

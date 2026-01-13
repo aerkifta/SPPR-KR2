@@ -1,18 +1,24 @@
 ﻿using Microsoft.AspNetCore.Http;
+using WEB_253551_KORZUN.UI.Services.Authentication;
 
 namespace WEB_253551_KORZUN.UI.Services
 {
     public class ApiFileService : IFileService
     {
         private readonly HttpClient _httpClient;
+        private readonly ITokenAccessor _tokenAccessor;
 
-        public ApiFileService(HttpClient httpClient)
+        public ApiFileService(HttpClient httpClient,
+            ITokenAccessor tokenAccessor)
         {
             _httpClient = httpClient;
+            _tokenAccessor = tokenAccessor;
         }
 
         public async Task<string> SaveFileAsync(IFormFile formFile)
         {
+            await _tokenAccessor.SetAuthorizationHeaderAsync(_httpClient);
+
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post
@@ -40,6 +46,8 @@ namespace WEB_253551_KORZUN.UI.Services
 
         public async Task DeleteFileAsync(string fileName)
         {
+            await _tokenAccessor.SetAuthorizationHeaderAsync(_httpClient);
+
             await _httpClient.DeleteAsync($"{fileName}");
         }
     }

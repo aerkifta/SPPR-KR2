@@ -2,6 +2,7 @@
 using System.Text.Json;
 using WEB_253551_KORZUN.Domain.Entities;
 using WEB_253551_KORZUN.Domain.Models;
+using WEB_253551_KORZUN.UI.Services.Authentication;
 
 namespace WEB_253551_KORZUN.UI.Services.ProductService
 {
@@ -12,17 +13,21 @@ namespace WEB_253551_KORZUN.UI.Services.ProductService
         private readonly JsonSerializerOptions _serializerOptions;
         private readonly string _pageSize;
         private readonly IFileService _fileService;
+        private readonly ITokenAccessor _tokenAccessor;
 
         public ApiProductService(
             HttpClient httpClient,
             IConfiguration configuration,
             ILogger<ApiProductService> logger,
-            IFileService fileService)
+            IFileService fileService,
+            ITokenAccessor tokenAccessor
+            )
         {
             _httpClient = httpClient;
             _logger = logger;
             _fileService = fileService;
             _pageSize = configuration["ItemsPerPage"] ?? "3";
+            _tokenAccessor = tokenAccessor;
 
             _serializerOptions = new JsonSerializerOptions()
             {
@@ -35,6 +40,8 @@ namespace WEB_253551_KORZUN.UI.Services.ProductService
             string? categoryNormalizedName,
             int pageNo = 1)
         {
+            await _tokenAccessor.SetAuthorizationHeaderAsync(_httpClient);
+
             try
             {
                 var urlString = new StringBuilder($"{_httpClient.BaseAddress!.AbsoluteUri}carparts/");
@@ -78,6 +85,8 @@ namespace WEB_253551_KORZUN.UI.Services.ProductService
 
         public async Task<ResponseData<CarPart>> GetProductByIdAsync(int id)
         {
+            await _tokenAccessor.SetAuthorizationHeaderAsync(_httpClient);
+
             try
             {
                 var url = $"{_httpClient.BaseAddress!.AbsoluteUri}carparts/{id}";
@@ -102,6 +111,8 @@ namespace WEB_253551_KORZUN.UI.Services.ProductService
 
         public async Task UpdateProductAsync(int id, CarPart product, IFormFile? formFile)
         {
+            await _tokenAccessor.SetAuthorizationHeaderAsync(_httpClient);
+
             try
             {
                 var oldProductResponse = await GetProductByIdAsync(id);
@@ -162,6 +173,8 @@ namespace WEB_253551_KORZUN.UI.Services.ProductService
 
         public async Task DeleteProductAsync(int id)
         {
+            await _tokenAccessor.SetAuthorizationHeaderAsync(_httpClient);
+
             var response = await GetProductByIdAsync(id);
             if (response.Successfull && response.Data != null)
             {
@@ -181,6 +194,8 @@ namespace WEB_253551_KORZUN.UI.Services.ProductService
 
         public async Task<ResponseData<CarPart>> CreateProductAsync(CarPart product, IFormFile? formFile)
         {
+            await _tokenAccessor.SetAuthorizationHeaderAsync(_httpClient);
+
             try
             {
                 product.Image = "Images/noimage.jpg";

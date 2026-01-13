@@ -1,0 +1,47 @@
+﻿@page "/catalog"
+@using WEB_253551_KORZUN.Blazor.Services
+@using WEB_253551_KORZUN.Blazor.Components
+@inject IDataService DataService
+
+<h3>Каталог автозапчастей</h3>
+
+<CategorySelector />
+
+@if (!DataService.Success)
+{
+    <div class="alert alert-danger">
+        @DataService.ErrorMessage
+    </div>
+}
+else if (DataService.CarParts.Count == 0)
+{
+    <p>Загрузка данных...</p>
+}
+else
+{
+    <ul>
+        @foreach (var part in DataService.CarParts)
+        {
+            <li>
+                <b>@part.Name</b><br />
+                @part.Description<br />
+                Цена: @part.Price
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        DataService.DataLoaded += StateHasChanged;
+
+        await DataService.GetCategoryListAsync();
+        await DataService.GetCarPartListAsync();
+    }
+
+    public void Dispose()
+    {
+        DataService.DataLoaded -= StateHasChanged;
+    }
+}

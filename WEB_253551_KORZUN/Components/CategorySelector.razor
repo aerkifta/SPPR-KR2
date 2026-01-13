@@ -1,0 +1,37 @@
+﻿@using WEB_253551_KORZUN.Blazor.Services
+@using WEB_253551_KORZUN.Blazor.Components
+@inject IDataService DataService
+
+<div class="mb-3">
+    <select class="form-select" @onchange="OnCategoryChanged">
+        <option value="">Все категории</option>
+
+        @foreach (var category in DataService.Categories)
+        {
+            <option value="@category.Id">
+                @category.Name
+            </option>
+        }
+    </select>
+</div>
+
+@code {
+    private async Task OnCategoryChanged(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString();
+
+        if (string.IsNullOrEmpty(value))
+        {
+            DataService.SelectedCategory = null;
+        }
+        else
+        {
+            DataService.SelectedCategory =
+                DataService.Categories.FirstOrDefault(c => c.Id == int.Parse(value));
+        }
+
+        DataService.CurrentPage = 1;
+
+        await DataService.GetCarPartListAsync();
+    }
+}

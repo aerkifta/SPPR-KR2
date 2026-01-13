@@ -1,0 +1,13 @@
+﻿@namespace WEB_253551_KORZUN.Blazor
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Routing
+@using WEB_253551_KORZUN.Blazor.Shared
+
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <p>Страница не найдена</p>
+    </NotFound>
+</Router>
